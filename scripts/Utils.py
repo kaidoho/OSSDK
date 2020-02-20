@@ -5,10 +5,12 @@
 
 import sys
 import os
+import io
 import glob
 import logging
 import shutil
 import hashlib
+import psutil
 from subprocess import *
 
 logFormatter = logging.Formatter("%(asctime)s [%(levelname)-5.5s]  %(message)s",datefmt='%Y-%m-%d %H:%M:%S')
@@ -54,6 +56,28 @@ def run_cmd(cmd, workdir, *args, **kwargs):
       logger.info(tmp[2:len(tmp)-5])
     else:
       logger.info(tmp[2:len(tmp)-3])
+  p.stdout.close()
+  p.wait()
+
+def run_cmd_ng(cmd, workdir, *args, **kwargs):
+  if "env" in kwargs:
+    cmdEnv = kwargs.get("env", None)
+    p = Popen(cmd, stdout=PIPE, stderr=STDOUT,shell=True,  cwd=workdir, env=cmdEnv)
+  else:
+    p = Popen(cmd, stdout=PIPE, stderr=STDOUT,shell=True,  cwd=workdir)
+  for line in io.TextIOWrapper(p.stdout, encoding="utf-8"):
+    if len(line) > 11: 
+      #print(len(line))
+      print (line.rstrip())
+  #for line in iter(p.stdout.readline, ""):
+  #    print (line.rstrip())
+   # tmp = str(line)
+   # if tmp.endswith("\\r\\n'"):
+   #   logger.info(tmp[2:len(tmp)-5])
+   # elif tmp.endswith("\\r\\n\""):
+   #   logger.info(tmp[2:len(tmp)-5])
+   # else:
+   #   logger.info(tmp[2:len(tmp)-3])
   p.stdout.close()
   p.wait()
 

@@ -1,4 +1,3 @@
 scripts/__pycache__
-ctng
-crosstool-ng
-tmp
+ctng/
+tmp/

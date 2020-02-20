@@ -7,6 +7,7 @@ import argparse
 from scripts.Utils import *
 
 CTNG_BIN_DIR      = os.getcwd() + "/ctng"
+CTNG_BINARY       = os.getcwd() + "/ctng/bin/ct-ng"  
 CTNG_REPO         = "https://github.com/crosstool-ng/crosstool-ng"
 CTNG_COMMIT_HASH  = "3f461da11f1f8e9dcfdffef24e1982b5ffd10305"
 
@@ -47,7 +48,7 @@ def fetch_ctng(topDir, tmpDir, forceRebuild):
     
     logger.info("Check if crosstool-ng has already been build...")
 
-    if not os.path.isfile(CTNG_BIN_DIR+"/ct-ng"):
+    if not os.path.isfile(CTNG_BINARY):
         logger.info("Binary not found")
         
         if os.path.exists(ctngSrc):
@@ -65,6 +66,36 @@ def fetch_ctng(topDir, tmpDir, forceRebuild):
 
         build_ctng(topDir, ctngSrc)
   
+
+def build_toolchain(topDir,tmpDir, arch, opsys):
+
+    buildDir =  tmpDir+"/build_" + arch + "_" + opsys
+    outputDir =  topDir+"/out_" + arch + "_" + opsys
+    cfgInputFile = topDir + "/configs/" + arch + ".config"
+
+    if not os.path.isfile(cfgInputFile):
+        logger.error("Configuration for target {0} not found".format(arch))
+        sys.exit(-1)
+
+    shutil.copy(cfgInputFile, tmpDir)
+    cfgInputFile = tmpDir + "/" + arch + ".config"
+
+    if os.path.exists(buildDir):
+        shutil.rmtree(buildDir, ignore_errors=True)
+    if os.path.exists(outputDir):
+        shutil.rmtree(outputDir, ignore_errors=True)
+
+    os.mkdir(buildDir)
+
+    cmd = "{0} clean".format(CTNG_BINARY)
+    run_cmd(cmd, buildDir)
+    cmd = "{0} defconfig DEFCONFIG={1}".format(CTNG_BINARY, cfgInputFile)
+    run_cmd(cmd, buildDir)
+    cmd = "{0} savedefconfig DEFCONFIG={1}.config".format(CTNG_BINARY,arch)
+    run_cmd(cmd, buildDir)
+    cmd = "{0} build -j {1}".format(CTNG_BINARY,psutil.cpu_count())
+    run_cmd_ng(cmd, buildDir)
+
 
 
 if __name__ == '__main__':
@@ -94,4 +125,5 @@ if __name__ == '__main__':
 
     fetch_ctng(cwd,tmpDir,0)
 
+    build_toolchain(cwd,tmpDir,args.architecture,args.host)
 
