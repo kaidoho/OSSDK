@@ -80,6 +80,13 @@ def build_toolchain(topDir,tmpDir, arch, opsys):
     shutil.copy(cfgInputFile, tmpDir)
     cfgInputFile = tmpDir + "/" + arch + ".config"
 
+    if opsys == "windows":
+        f=open(cfgInputFile, "a+")
+        f.write("CT_CANADIAN=y\n")
+        f.write("CT_HOST=\"x86_64-w64-mingw32\"\n")
+        f.close()
+
+
     if os.path.exists(buildDir):
         shutil.rmtree(buildDir, ignore_errors=True)
     if os.path.exists(outputDir):
@@ -108,7 +115,7 @@ if __name__ == '__main__':
     optArgs.add_argument('-hst', '--host',
                          help="select the host operating system"
                          "(default=linux)",
-                         default="linux")
+                         default="windows")
     
     
     argParser._action_groups.append(optArgs)
