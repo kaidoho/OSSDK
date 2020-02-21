@@ -115,7 +115,7 @@ if __name__ == '__main__':
     optArgs.add_argument('-hst', '--host',
                          help="select the host operating system"
                          "(default=linux)",
-                         default="windows")
+                         default="linux")
     
     
     argParser._action_groups.append(optArgs)
