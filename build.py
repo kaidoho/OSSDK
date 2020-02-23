@@ -100,7 +100,7 @@ def build_toolchain(topDir,tmpDir, arch, opsys):
     run_cmd(cmd, buildDir)
     cmd = "{0} savedefconfig DEFCONFIG={1}.config".format(CTNG_BINARY,arch)
     run_cmd(cmd, buildDir)
-    cmd = "{0} build -j {1}".format(CTNG_BINARY,psutil.cpu_count())
+    cmd = "{0} build.{1}".format(CTNG_BINARY,psutil.cpu_count())
     run_cmd_ng(cmd, buildDir)
 
 

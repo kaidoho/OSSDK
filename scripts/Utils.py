@@ -66,9 +66,10 @@ def run_cmd_ng(cmd, workdir, *args, **kwargs):
   else:
     p = Popen(cmd, stdout=PIPE, stderr=STDOUT,shell=True,  cwd=workdir)
   for line in io.TextIOWrapper(p.stdout, encoding="utf-8"):
-    if len(line) > 11: 
+    if line[0] == "[": 
+        if line[1] == "E" or line[1] == "W" or line[1] == "I" or line[1] == "D": 
       #print(len(line))
-      print (line.rstrip())
+            print (line.rstrip())
   #for line in iter(p.stdout.readline, ""):
   #    print (line.rstrip())
    # tmp = str(line)
