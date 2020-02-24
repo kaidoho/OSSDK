@@ -112,7 +112,7 @@ if __name__ == '__main__':
                          help="select the target architecture"
                          "(default=arm)",
                          default="arm")
-    optArgs.add_argument('-hst', '--host',
+    optArgs.add_argument('-host', '--hostos',
                          help="select the host operating system"
                          "(default=linux)",
                          default="linux")
@@ -132,5 +132,5 @@ if __name__ == '__main__':
 
     fetch_ctng(cwd,tmpDir,0)
 
-    build_toolchain(cwd,tmpDir,args.architecture,args.host)
+    build_toolchain(cwd,tmpDir,args.architecture,args.hostos)
 
