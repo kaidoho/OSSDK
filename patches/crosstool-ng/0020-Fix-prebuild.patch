@@ -1,48 +1,54 @@
-From 3a809d6541a236738680fad0d92ad155b92632ba Mon Sep 17 00:00:00 2001
+From 28ad291ed41a142bd341f53d07a44287d42580df Mon Sep 17 00:00:00 2001
 From: Markus Moessner <Markus.Moessner@sick.de>
-Date: Tue, 25 Feb 2020 16:32:56 +0100
-Subject: [PATCH] init
+Date: Tue, 25 Feb 2020 16:54:30 +0100
+Subject: [PATCH] fix
 
 ---
- scripts/build/cc/gcc.sh | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ scripts/build/cc/gcc.sh | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
 diff --git a/scripts/build/cc/gcc.sh b/scripts/build/cc/gcc.sh
-index ff2ff64..62c1cf3 100644
+index ff2ff64..80839a0 100644
 --- a/scripts/build/cc/gcc.sh
 +++ b/scripts/build/cc/gcc.sh
-@@ -1016,6 +1016,7 @@ do_gcc_backend() {
+@@ -1015,6 +1015,7 @@ do_gcc_backend() {
+     local cflags
      local cflags_for_build
      local cflags_for_target
++    local ldflags_for_taget
      local ldflags
-+    local ldflags_for_target
      local build_manuals
      local build_step
-     local log_txt
-@@ -1128,7 +1129,7 @@ do_gcc_backend() {
+@@ -1160,10 +1161,6 @@ do_gcc_backend() {
+         final_LDFLAGS+=("-lstdc++")
+         final_LDFLAGS+=("-lm")
      fi
- 
-     final_LDFLAGS+=("${ldflags}")
 -
-+    ldflags_for_target +=("${CT_TARGET_LDFLAGS}")
-     # *** WARNING ! ***
-     # Keep this full if-else-if-elif-fi-fi block in sync
-     # with the same block in do_gcc_core_backend, above.
-@@ -1162,7 +1163,7 @@ do_gcc_backend() {
-     fi
- 
-     if [ "${CT_RTEMS}" = "y" ]; then
+-    if [ "${CT_RTEMS}" = "y" ]; then
 -        final_LDFLAGS+=("-L${CT_PREFIX_DIR}/${CT_TARGET}/lib")
-+        ldflags_for_target+=("-L${CT_PREFIX_DIR}/${CT_TARGET}/lib")
-     fi
+-    fi
      
      extra_config+=("--with-gmp=${complibs}")
-@@ -1324,7 +1325,7 @@ do_gcc_backend() {
+     extra_config+=("--with-mpfr=${complibs}")
+@@ -1312,6 +1309,12 @@ do_gcc_backend() {
+         cflags_for_target ="-fdata-sections ${cflags_for_target}"
+         cflags_for_target ="-fno-exceptions ${cflags_for_target}"
+     fi
++    
++    ldflags_for_target = "${CT_TARGET_LDFLAGS}"
++    if [ "${CT_RTEMS}" = "y" ]; then
++        ldflags_for_target+=("-L${CT_PREFIX_DIR}/${CT_TARGET}/lib")
++    fi
++
+ 
+     # NB: not using CT_ALL_TARGET_CFLAGS/CT_ALL_TARGET_LDFLAGS here!
+     # See do_gcc_core_backend for explanation.
+@@ -1324,7 +1327,7 @@ do_gcc_backend() {
      LDFLAGS="${final_LDFLAGS[*]}"                      \
      CFLAGS_FOR_TARGET="${cflags_for_target}"           \
      CXXFLAGS_FOR_TARGET="${cflags_for_target}"         \
 -    LDFLAGS_FOR_TARGET="${CT_TARGET_LDFLAGS}"          \
-+    LDFLAGS_FOR_TARGET="${ldflags_for_target}"         \
++    LDFLAGS_FOR_TARGET="${ldflags_for_target[*]}"      \
      ${CONFIG_SHELL}                                    \
      "${CT_SRC_DIR}/gcc/configure"                      \
          --build=${CT_BUILD}                            \
