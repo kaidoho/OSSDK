@@ -1,0 +1,51 @@
+From 3a809d6541a236738680fad0d92ad155b92632ba Mon Sep 17 00:00:00 2001
+From: Markus Moessner <Markus.Moessner@sick.de>
+Date: Tue, 25 Feb 2020 16:32:56 +0100
+Subject: [PATCH] init
+
+---
+ scripts/build/cc/gcc.sh | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/scripts/build/cc/gcc.sh b/scripts/build/cc/gcc.sh
+index ff2ff64..62c1cf3 100644
+--- a/scripts/build/cc/gcc.sh
++++ b/scripts/build/cc/gcc.sh
+@@ -1016,6 +1016,7 @@ do_gcc_backend() {
+     local cflags_for_build
+     local cflags_for_target
+     local ldflags
++    local ldflags_for_target
+     local build_manuals
+     local build_step
+     local log_txt
+@@ -1128,7 +1129,7 @@ do_gcc_backend() {
+     fi
+ 
+     final_LDFLAGS+=("${ldflags}")
+-
++    ldflags_for_target +=("${CT_TARGET_LDFLAGS}")
+     # *** WARNING ! ***
+     # Keep this full if-else-if-elif-fi-fi block in sync
+     # with the same block in do_gcc_core_backend, above.
+@@ -1162,7 +1163,7 @@ do_gcc_backend() {
+     fi
+ 
+     if [ "${CT_RTEMS}" = "y" ]; then
+-        final_LDFLAGS+=("-L${CT_PREFIX_DIR}/${CT_TARGET}/lib")
++        ldflags_for_target+=("-L${CT_PREFIX_DIR}/${CT_TARGET}/lib")
+     fi
+     
+     extra_config+=("--with-gmp=${complibs}")
+@@ -1324,7 +1325,7 @@ do_gcc_backend() {
+     LDFLAGS="${final_LDFLAGS[*]}"                      \
+     CFLAGS_FOR_TARGET="${cflags_for_target}"           \
+     CXXFLAGS_FOR_TARGET="${cflags_for_target}"         \
+-    LDFLAGS_FOR_TARGET="${CT_TARGET_LDFLAGS}"          \
++    LDFLAGS_FOR_TARGET="${ldflags_for_target}"         \
+     ${CONFIG_SHELL}                                    \
+     "${CT_SRC_DIR}/gcc/configure"                      \
+         --build=${CT_BUILD}                            \
+-- 
+2.7.4
+
